@@ -37,6 +37,7 @@ jobs:
           VALUE_NAME: "image"
           NEW_TAG: ${{ github.sha }}
           GITOPS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          IMAGE_NAME: brunopace85/online-boutique-frontend
         
         steps:
           - name: Update Tag directly in GitOps Repo
@@ -48,7 +49,7 @@ jobs:
         
               # 2. Atualiza o valor no arquivo YAML usando sed
               # Usa '|' como delimitador para não conflitar com as barras do nome da imagem
-              sed -i 's|'${VALUE_NAME}': .*$|'${VALUE_NAME}': "'${NEW_TAG}'"|g' ${VALUES_FILE}
+              sed -i 's|'${VALUE_NAME}': .*$|'${VALUE_NAME}': "'${IMAGE_NAME}:${NEW_TAG}'"|g' ${VALUES_FILE}
         
               # 3. Configura o Git e envia a alteração
               git config user.name "${{ github.actor }}"
