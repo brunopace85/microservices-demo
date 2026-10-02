@@ -22,7 +22,7 @@ jobs:
               tags: ${{ github.sha }}
               registry: docker.io
               dockerfile: Dockerfile
-              target: frontend
+              directory: frontend
               username: ${{ secrets.DOCKER_USERNAME }}
               password: ${{ secrets.DOCKER_PASSWORD }}
 
