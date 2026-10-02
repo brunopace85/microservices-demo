@@ -36,7 +36,7 @@ jobs:
           VALUES_FILE: "./prod/frontend.yaml"
           VALUE_NAME: "brunopace85/online-boutique-frontend"
           NEW_TAG: ${{ github.sha }}
-          GITOPS_TOKEN: ${{ secrets.GITOPS_PAT }}
+          GITOPS_TOKEN: ${{ secrets.ACCES_TOKEN }}
         
         steps:
           - name: Update Tag directly in GitOps Repo
