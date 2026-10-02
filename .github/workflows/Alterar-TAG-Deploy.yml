@@ -36,7 +36,7 @@ jobs:
           VALUES_FILE: "./prod/frontend.yaml"
           VALUE_NAME: "brunopace85/online-boutique-frontend"
           NEW_TAG: ${{ github.sha }}
-          GITOPS_TOKEN: ${{ secrets.ACCES_TOKEN }}
+          GITOPS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         
         steps:
           - name: Update Tag directly in GitOps Repo
@@ -57,3 +57,4 @@ jobs:
               git commit --allow-empty -m "Update revision of '${VALUE_NAME}' to ${NEW_TAG}"
               git pull --rebase
               git push
+            shell: bash
