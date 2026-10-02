@@ -47,7 +47,8 @@ jobs:
               cd ./gitops-repo
         
               # 2. Atualiza o valor no arquivo YAML usando sed
-              sed -i 's/'${VALUE_NAME}': .*$/'${VALUE_NAME}': "'${NEW_TAG}'"/g' ${VALUES_FILE}
+              # Usa '|' como delimitador para não conflitar com as barras do nome da imagem
+              sed -i 's|'${VALUE_NAME}': .*$|'${VALUE_NAME}': "'${NEW_TAG}'"|g' ${VALUES_FILE}
         
               # 3. Configura o Git e envia a alteração
               git config user.name "${{ github.actor }}"
