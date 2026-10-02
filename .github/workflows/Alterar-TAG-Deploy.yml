@@ -26,16 +26,33 @@ jobs:
               username: ${{ secrets.DOCKER_USERNAME }}
               password: ${{ secrets.DOCKER_PASSWORD }}
 
-    imageTag-updater:
+    update-gitops:
         runs-on: ubuntu-latest
-        steps:
-        - uses: actions/checkout@v3
+        needs: build-and-push
         
-        - name: Update imageTag
-          uses: cheelim1/image-updater@v1.11
-          with:
-            GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-            REPO_NAME: 'microservices-demo-manifests'
-            REPO_OWNER: 'brunopace85'
-            FILE_PATH: 'prod/frontend.yaml'
-            IMAGE_TAG: ${{ github.sha}}
+        env:
+          GITOPS_REPO: "seu-usuario/seu-repo-gitops"
+          BRANCH: "main"
+          VALUES_FILE: "./prod/frontend.yaml"
+          VALUE_NAME: "brunopace85/online-boutique-frontend"
+          NEW_TAG: ${{ github.sha }}
+          GITOPS_TOKEN: ${{ secrets.GITOPS_PAT }}
+        
+        steps:
+          - name: Update Tag directly in GitOps Repo
+            run: |
+              # 1. Clona o repositório GitOps
+              REPO_URL="https://x-access-token:${GITOPS_TOKEN}@github.com/${GITOPS_REPO}.git"
+              git clone --depth 1 ${REPO_URL} --branch ${BRANCH} --single-branch ./gitops-repo
+              cd ./gitops-repo
+        
+              # 2. Atualiza o valor no arquivo YAML usando sed
+              sed -i 's/'${VALUE_NAME}': .*$/'${VALUE_NAME}': "'${NEW_TAG}'"/g' ${VALUES_FILE}
+        
+              # 3. Configura o Git e envia a alteração
+              git config user.name "${{ github.actor }}"
+              git config user.email "${{ github.actor }}@users.noreply.github.com"
+              git add .
+              git commit --allow-empty -m "Update revision of '${VALUE_NAME}' to ${NEW_TAG}"
+              git pull --rebase
+              git push
