@@ -21,7 +21,7 @@ jobs:
               image: brunopace85/online-boutique-frontend
               tags: ${{ github.sha }}
               registry: docker.io
-              dockerfile: .
+              dockerfile: Dockerfile
               directory: src/frontend
               username: ${{ secrets.DOCKER_USERNAME }}
               password: ${{ secrets.DOCKER_PASSWORD }}
@@ -38,4 +38,4 @@ jobs:
                     BRANCH: "main"
                     VALUES_FILE_PATH: 'prod/frontend.yaml'
                     VALUE_NAME: 'image'
-                    TAG: brunopace85\/online-boutique-frontend:${{ github.sha }}
+                    TAG: "brunopace85/online-boutique-frontend:${{ github.sha }}"
