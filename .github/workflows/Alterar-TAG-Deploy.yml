@@ -37,5 +37,5 @@ jobs:
                     ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
                     BRANCH: "main"
                     VALUES_FILE_PATH: 'prod/frontend.yaml'
-                    VALUE_NAME: 'brunopace85/online-boutique-frontend'
+                    VALUE_NAME: 'online-boutique-frontend'
                     TAG: ${{ github.sha }}
