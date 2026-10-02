@@ -42,7 +42,7 @@ jobs:
           - name: Update Tag directly in GitOps Repo
             run: |
               # 1. Clona o repositório GitOps
-              REPO_URL="https://${GITOPS_TOKEN}@github.com/${GITOPS_REPO}.git"
+              REPO_URL="https://x-access-token:${GITOPS_TOKEN}@github.com/${GITOPS_REPO}.git"
               git clone --depth 1 ${REPO_URL} --branch ${BRANCH} --single-branch ./gitops-repo
               cd ./gitops-repo
         
@@ -53,10 +53,6 @@ jobs:
               # 3. Configura o Git e envia a alteração
               git config user.name "${{ github.actor }}"
               git config user.email "${{ github.actor }}@users.noreply.github.com"
-
-              # 5. Garante que a URL remota use o token para a autenticação no push
-              git remote set-url origin ${REPO_URL}
-
               git add .
               git commit --allow-empty -m "Update revision of '${VALUE_NAME}' to ${NEW_TAG}"
               git pull --rebase
