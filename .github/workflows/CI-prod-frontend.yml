@@ -1,15 +1,15 @@
 name: Update Image Tag in GitOps Repository
 
-env:
-  IMAGE_NAME: brunopace85/online-boutique-frontend
-  SERVICE_NAME: frontend
-
 on:
   push:
     branches:
       -  main
     paths:
-      - 'src/$SERVICE_NAME/**'
+      - 'src/frontend/**'
+
+env:
+  IMAGE_NAME: brunopace85/online-boutique-frontend
+  SERVICE_NAME: frontend
 
 jobs:
     build-and-push:
