@@ -38,7 +38,6 @@ jobs:
     env:
       GITOPS_REPO: "brunopace85/microservices-demo-manifests"
       BRANCH: "main"
-      VALUES_FILE: "./prod/${{ env.SERVICE_NAME }}.yaml"
       VALUE_NAME: "image"
       NEW_TAG: ${{ github.sha }}
       GITOPS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
@@ -53,7 +52,7 @@ jobs:
 
           # 2. Atualiza o valor no arquivo YAML usando sed
           # Usa '|' como delimitador para evitar conflito com as barras da imagem
-          sed -i 's|'${VALUE_NAME}': .*$|'${VALUE_NAME}': "'${IMAGE_NAME}:${NEW_TAG}'"|g' ${VALUES_FILE}
+          sed -i 's|'${VALUE_NAME}': .*$|'${VALUE_NAME}': "'${IMAGE_NAME}:${NEW_TAG}'"|g' "./prod/${{ env.IMAGE_NAME }}.yml"
 
           # 3. Configura o Git e envia a alteração
           git config user.name "${{ github.actor }}"
