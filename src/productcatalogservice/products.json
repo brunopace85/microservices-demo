@@ -2,7 +2,7 @@
     "products": [
         {
             "id": "OLJCESPC7Z",
-            "name": "Óculos de sol",
+            "name": "Óculos de sol - DEV",
             "description": "Add a modern touch to your outfits with these sleek aviator sunglasses.",
             "picture": "/static/img/products/sunglasses.jpg",
             "priceUsd": {
