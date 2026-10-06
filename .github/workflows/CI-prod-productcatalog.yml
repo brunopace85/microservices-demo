@@ -1,0 +1,61 @@
+name: Update Image Tag in GitOps Repository
+
+on:
+  push:
+    branches:
+      -  main
+    paths:
+      - 'src/productcatalogservice/**'
+
+jobs:
+    build-and-push:
+        runs-on: ubuntu-latest
+
+        steps:
+          - uses: actions/checkout@v3
+            name: Check out code
+
+          - uses: mr-smithers-excellent/docker-build-push@v7
+            name: Build & push Docker image
+            with:
+              image: brunopace85/online-boutique-productcatalogservice
+              tags: ${{ github.sha }}
+              registry: docker.io
+              dockerfile: src/productcatalogservice/Dockerfile
+              directory: src/productcatalogservice
+              username: ${{ secrets.DOCKER_USERNAME }}
+              password: ${{ secrets.DOCKER_PASSWORD }}
+
+    update-gitops:
+        runs-on: ubuntu-latest
+        needs: build-and-push
+        
+        env:
+          GITOPS_REPO: "brunopace85/microservices-demo-manifests"
+          BRANCH: "main"
+          VALUES_FILE: "./prod/productcatalogservice.yaml"
+          VALUE_NAME: "image"
+          NEW_TAG: ${{ github.sha }}
+          GITOPS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          IMAGE_NAME: brunopace85/online-boutique-productcatalogservice
+        
+        steps:
+          - name: Update Tag directly in GitOps Repo
+            run: |
+              # 1. Clona o repositório GitOps
+              REPO_URL="https://x-access-token:${GITOPS_TOKEN}@github.com/${GITOPS_REPO}.git"
+              git clone --depth 1 ${REPO_URL} --branch ${BRANCH} --single-branch ./gitops-repo
+              cd ./gitops-repo
+        
+              # 2. Atualiza o valor no arquivo YAML usando sed
+              # Usa '|' como delimitador para não conflitar com as barras do nome da imagem
+              sed -i 's|'${VALUE_NAME}': .*$|'${VALUE_NAME}': "'${IMAGE_NAME}:${NEW_TAG}'"|g' ${VALUES_FILE}
+        
+              # 3. Configura o Git e envia a alteração
+              git config user.name "${{ github.actor }}"
+              git config user.email "${{ github.actor }}@users.noreply.github.com"
+              git add .
+              git commit --allow-empty -m "Update revision of '${VALUE_NAME}' to ${NEW_TAG}"
+              git pull --rebase
+              git push
+            shell: bash
