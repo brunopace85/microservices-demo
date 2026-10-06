@@ -8,7 +8,7 @@ on:
       - 'src/productcatalogservice/**'
 
 env:
-  BRANCH: "dev"
+  BRANCH_APP: "dev"
   IMAGE_NAME: brunopace85/online-boutique-productcatalogservice
   SERVICE_NAME: productcatalogservice
 
@@ -53,7 +53,7 @@ jobs:
 
           # 2. Atualiza o valor no arquivo YAML usando sed
           # Usa '|' como delimitador para evitar conflito com as barras da imagem
-          sed -i 's|'${VALUE_NAME}': .*$|'${VALUE_NAME}': "'${IMAGE_NAME}:${NEW_TAG}'"|g' "./${{ env.BRANCH }}/${{ env.SERVICE_NAME }}.yaml"
+          sed -i 's|'${VALUE_NAME}': .*$|'${VALUE_NAME}': "'${IMAGE_NAME}:${NEW_TAG}'"|g' "./${{ env.BRANCH_APP }}/${{ env.SERVICE_NAME }}.yaml"
 
           # 3. Configura o Git e envia a alteração
           git config user.name "${{ github.actor }}"
