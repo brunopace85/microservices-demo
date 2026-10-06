@@ -1,11 +1,15 @@
 name: Update Image Tag in GitOps Repository
 
+env:
+  IMAGE_NAME: brunopace85/online-boutique-frontend
+  SERVICE_NAME: frontend
+
 on:
   push:
     branches:
       -  main
     paths:
-      - 'src/frontend/**'
+      - 'src/$SERVICE_NAME/**'
 
 jobs:
     build-and-push:
@@ -18,11 +22,11 @@ jobs:
           - uses: mr-smithers-excellent/docker-build-push@v7
             name: Build & push Docker image
             with:
-              image: brunopace85/online-boutique-frontend
+              image: $IMAGE_NAME
               tags: ${{ github.sha }}
               registry: docker.io
-              dockerfile: src/frontend/Dockerfile
-              directory: src/frontend
+              dockerfile: src/$SERVICE_NAME/Dockerfile
+              directory: src/$SERVICE_NAME
               username: ${{ secrets.DOCKER_USERNAME }}
               password: ${{ secrets.DOCKER_PASSWORD }}
 
@@ -33,11 +37,10 @@ jobs:
         env:
           GITOPS_REPO: "brunopace85/microservices-demo-manifests"
           BRANCH: "main"
-          VALUES_FILE: "./prod/frontend.yaml"
+          VALUES_FILE: "./prod/$SERVICE_NAME.yaml"
           VALUE_NAME: "image"
           NEW_TAG: ${{ github.sha }}
           GITOPS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          IMAGE_NAME: brunopace85/online-boutique-frontend
         
         steps:
           - name: Update Tag directly in GitOps Repo
