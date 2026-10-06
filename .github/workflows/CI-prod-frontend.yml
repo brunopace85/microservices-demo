@@ -52,7 +52,7 @@ jobs:
 
           # 2. Atualiza o valor no arquivo YAML usando sed
           # Usa '|' como delimitador para evitar conflito com as barras da imagem
-          sed -i 's|'${VALUE_NAME}': .*$|'${VALUE_NAME}': "'${IMAGE_NAME}:${NEW_TAG}'"|g' "./prod/${{ env.IMAGE_NAME }}.yml"
+          sed -i 's|'${VALUE_NAME}': .*$|'${VALUE_NAME}': "'${IMAGE_NAME}:${NEW_TAG}'"|g' "./prod/${{ env.SERVICE_NAME }}.yml"
 
           # 3. Configura o Git e envia a alteração
           git config user.name "${{ github.actor }}"
