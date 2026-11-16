@@ -139,6 +139,7 @@ func (plat *platformDetails) setPlatformDetails(env string) {
 	default:
 		plat.provider = "local"
 		plat.css = "local"
+	}
 }
 
 func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request) {
