@@ -44,8 +44,8 @@ type platformDetails struct {
 
 var (
 	frontendMessage  = strings.TrimSpace(os.Getenv("FRONTEND_MESSAGE"))
-	isCymbalBrand    = "true" == strings.ToLower(os.Getenv("CYMBAL_BRANDING"))
-	assistantEnabled = "true" == strings.ToLower(os.Getenv("ENABLE_ASSISTANT"))
+	isCymbalBrand    = strings.ToLower(os.Getenv("CYMBAL_BRANDING")) == "true"
+	assistantEnabled = strings.ToLower(os.Getenv("ENABLE_ASSISTANT")) == "true"
 	templates        = template.Must(template.New("").
 				Funcs(template.FuncMap{
 			"renderMoney":        renderMoney,
@@ -92,7 +92,7 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 	// Set ENV_PLATFORM (default to local if not set; use env var if set; otherwise detect GCP, which overrides env)_
 	var env = os.Getenv("ENV_PLATFORM")
 	// Only override from env variable if set + valid env
-	if env == "" || stringinSlice(validEnvs, env) == false {
+	if env == "" || !stringinSlice(validEnvs, env) {
 		fmt.Println("env platform is either empty or invalid")
 		env = "local"
 	}
@@ -120,25 +120,25 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (plat *platformDetails) setPlatformDetails(env string) {
-	if env == "aws" {
+	switch env {
+	case "aws":
 		plat.provider = "AWS"
 		plat.css = "aws-platform"
-	} else if env == "onprem" {
+	case "onprem":
 		plat.provider = "On-Premises"
 		plat.css = "onprem-platform"
-	} else if env == "azure" {
+	case "azure":
 		plat.provider = "Azure"
 		plat.css = "azure-platform"
-	} else if env == "gcp" {
+	case "gcp":
 		plat.provider = "Google Cloud"
 		plat.css = "gcp-platform"
-	} else if env == "alibaba" {
+	case "alibaba":
 		plat.provider = "Alibaba Cloud"
 		plat.css = "alibaba-platform"
-	} else {
+	default:
 		plat.provider = "local"
 		plat.css = "local"
-	}
 }
 
 func (fe *frontendServer) productHandler(w http.ResponseWriter, r *http.Request) {
@@ -444,7 +444,7 @@ func (fe *frontendServer) getProductByID(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	w.Write(jsonData)
+	_, _ = w.Write(jsonData)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -491,7 +491,7 @@ func (fe *frontendServer) chatBotHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	// respond with the same message
-	json.NewEncoder(w).Encode(Response{Message: response.Content})
+	_, _ = json.NewEncoder(w).Encode(Response{Message: response.Content})
 
 	w.WriteHeader(http.StatusOK)
 }
