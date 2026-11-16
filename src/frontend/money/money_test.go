@@ -84,7 +84,7 @@ func TestIsPositive(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsPositive(tt.in); got != tt.want {
+			if got := IsPositive(&tt.in); got != tt.want {
 				t.Errorf("IsPositive(%v) = %v, want %v", tt.in, got, tt.want)
 			}
 		})
