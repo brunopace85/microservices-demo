@@ -26,58 +26,47 @@ env:
   SERVICE_NAME: frontend
 
 jobs:
-  autofix:
-    name: gofmt + golangci-lint --fix
+  lint:
+    name: Lint (gofmt + vet + golangci-lint)
     runs-on: ubuntu-latest
-    # PRs vindos de forks não têm permissão de escrita
-    if: github.event.pull_request.head.repo.full_name == github.repository
-
     defaults:
       run:
         working-directory: src/frontend
 
     steps:
-      - name: Check out code (branch do PR)
+      - name: Check out code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-          # com o PAT, o commit do autofix dispara os outros workflows de novo
-          token: ${{ secrets.ACCESS_TOKEN || github.token }}
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
+          # usa a mesma versão declarada no go.mod do frontend
           go-version-file: src/frontend/go.mod
           cache-dependency-path: src/frontend/go.sum
 
-      - name: gofmt -w
-        run: gofmt -w .
+      - name: Verificar formatação (gofmt)
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "Arquivos fora do padrão gofmt:"
+            echo "$unformatted"
+            exit 1
+          fi
 
-      - name: golangci-lint --fix
+      - name: go vet
+        run: go vet -copylocks=false ./...
+
+      - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
-        # o que não tem correção automática continua sendo barrado no workflow de lint
-        continue-on-error: true
         with:
           version: latest
           working-directory: src/frontend
-          args: --fix --timeout=5m
-
-      - name: Commit das correções
-        run: |
-          if [ -n "$(git status --porcelain .)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A .
-            git commit -m "style(frontend): autofix gofmt e golangci-lint"
-            git push
-          else
-            echo "Nada para corrigir."
-          fi
+          args: --timeout=5m
 
   build-and-push:
     name: Build & push Docker image
     runs-on: ubuntu-latest
-    needs: autofix
+    needs: lint
     # só publica imagem em push/execução manual, nunca em pull request
     if: github.event_name != 'pull_request'
 
