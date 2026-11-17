@@ -37,10 +37,10 @@ func IsValid(m pb.Money) bool {
 }
 
 func signMatches(m *pb.Money) bool {
-    if m == nil {
-        return false
-    }
-    // lógica interna de signMatches usando m.GetUnits() e m.GetNanos()
+	if m == nil {
+		return false
+	}
+	// lógica interna de signMatches usando m.GetUnits() e m.GetNanos()
 }
 
 func validNanos(nanos int32) bool { return nanosMin <= nanos && nanos <= nanosMax }
