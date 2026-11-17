@@ -32,15 +32,14 @@ var (
 )
 
 // IsValid checks if specified value has a valid units/nanos signs and ranges.
-func IsValid(m pb.Money) bool {
-	return signMatches(m) && validNanos(m.GetNanos())
-}
-
-func signMatches(m *pb.Money) bool {
+func IsValid(m *pb.Money) bool {
 	if m == nil {
 		return false
 	}
-	// lógica interna de signMatches usando m.GetUnits() e m.GetNanos()
+	return signMatches(m) && validNanos(m.GetNanos())
+}
+func signMatches(m pb.Money) bool {
+	return m.GetNanos() == 0 || m.GetUnits() == 0 || (m.GetNanos() < 0) == (m.GetUnits() < 0)
 }
 
 func validNanos(nanos int32) bool { return nanosMin <= nanos && nanos <= nanosMax }
