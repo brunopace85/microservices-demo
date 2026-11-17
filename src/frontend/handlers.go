@@ -444,7 +444,9 @@ func (fe *frontendServer) getProductByID(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	w.Write(jsonData)
+	if _, err := w.Write(jsonData); err != nil {
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
