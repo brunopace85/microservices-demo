@@ -235,12 +235,12 @@ func TestSum(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Sum(tt.args.l, tt.args.r)
+			got, err := Sum(&tt.args.l, &tt.args.r) // <-- Adicionados os & em tt.args.l e tt.args.r
 			if err != tt.wantErr {
-				t.Errorf("Sum([%v],[%v]): expected err=\"%v\" got=\"%v\"", tt.args.l, tt.args.r, tt.wantErr, err)
+				t.Errorf("Sum([%v],[%v]): expected err=\"%v\" got=\"%v\"", &tt.args.l, &tt.args.r, tt.wantErr, err)
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Sum([%v],[%v]) = %v, want %v", tt.args.l, tt.args.r, got, tt.want)
+			if !reflect.DeepEqual(got, &tt.want) { // <-- Adicionado o & em tt.want para alinhar os tipos (*pb.Money)
+				t.Errorf("Sum([%v],[%v]) = %v, want %v", &tt.args.l, &tt.args.r, got, tt.want)
 			}
 		})
 	}
