@@ -63,7 +63,7 @@ func TestIsZero(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsZero(tt.in); got != tt.want {
+			if got := IsZero(&tt.in); got != tt.want { // <-- Adicione o & aqui
 				t.Errorf("IsZero(%v) = %v, want %v", tt.in, got, tt.want)
 			}
 		})
