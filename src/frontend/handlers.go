@@ -493,7 +493,9 @@ func (fe *frontendServer) chatBotHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	// respond with the same message
-	json.NewEncoder(w).Encode(Response{Message: response.Content})
+	if err := json.NewEncoder(w).Encode(Response{Message: response.Content}); err != nil {
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
 }
