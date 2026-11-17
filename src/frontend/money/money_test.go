@@ -62,10 +62,11 @@ func TestIsZero(t *testing.T) {
 		{"not-zero (+/+)", mm(+1, +1), false},
 		{"not-zero (+/-)", mm(+1, -1), false},
 	}
-	for _, tt := range tests {
+	for i := range tests {
+		tt := &tests[i]
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsZero(&tt.in); got != tt.want { // <-- Adicione o & aqui
-				t.Errorf("IsZero(%v) = %v, want %v", tt.in, got, tt.want)
+			if got := IsZero(&tt.in); got != tt.want {
+				t.Errorf("IsZero(%v) = %v, want %v", &tt.in, got, tt.want) // Passa o ponteiro para evitar copiar o lock
 			}
 		})
 	}
@@ -83,10 +84,11 @@ func TestIsPositive(t *testing.T) {
 		{"negative (-/-)", mm(-1, -1), false},
 		{"invalid (+/-)", mm(+1, -1), false},
 	}
-	for _, tt := range tests {
+	for i := range tests {
+		tt := &tests[i]
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsPositive(&tt.in); got != tt.want { // <-- Adicione o & aqui
-				t.Errorf("IsPositive(%v) = %v, want %v", tt.in, got, tt.want)
+			if got := IsPositive(&tt.in); got != tt.want {
+				t.Errorf("IsPositive(%v) = %v, want %v", &tt.in, got, tt.want) // Passa o ponteiro para evitar copiar o lock
 			}
 		})
 	}
@@ -104,10 +106,11 @@ func TestIsNegative(t *testing.T) {
 		{"negative (-/-)", mm(-1, -1), true},
 		{"invalid (+/-)", mm(+1, -1), false},
 	}
-	for _, tt := range tests {
+	for i := range tests {
+		tt := &tests[i]
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsNegative(&tt.in); got != tt.want { // <-- Adicionado o & aqui
-				t.Errorf("IsNegative(%v) = %v, want %v", tt.in, got, tt.want)
+			if got := IsNegative(&tt.in); got != tt.want {
+				t.Errorf("IsNegative(%v) = %v, want %v", &tt.in, got, tt.want) // Passa o ponteiro para evitar copiar o lock
 			}
 		})
 	}
@@ -129,10 +132,11 @@ func TestAreSameCurrency(t *testing.T) {
 		{"mismatching", args{mmc(1, 0, "USD"), mmc(2, 0, "CAD")}, false},
 		{"matching", args{mmc(1, 0, "USD"), mmc(2, 0, "USD")}, true},
 	}
-	for _, tt := range tests {
+	for i := range tests {
+		tt := &tests[i]
 		t.Run(tt.name, func(t *testing.T) {
-			if got := AreSameCurrency(&tt.args.l, &tt.args.r); got != tt.want { // <-- Adicionados os & aqui
-				t.Errorf("AreSameCurrency([%v],[%v]) = %v, want %v", tt.args.l, tt.args.r, got, tt.want)
+			if got := AreSameCurrency(&tt.args.l, &tt.args.r); got != tt.want {
+				t.Errorf("AreSameCurrency([%v],[%v]) = %v, want %v", &tt.args.l, &tt.args.r, got, tt.want)
 			}
 		})
 	}
@@ -154,10 +158,11 @@ func TestAreEquals(t *testing.T) {
 		{"mismatching nanos", args{mmc(1, 2, "USD"), mmc(1, 20, "USD")}, false},
 		{"negated", args{mmc(1, 2, "USD"), mmc(-1, -2, "USD")}, false},
 	}
-	for _, tt := range tests {
+	for i := range tests {
+		tt := &tests[i]
 		t.Run(tt.name, func(t *testing.T) {
-			if got := AreEquals(&tt.args.l, &tt.args.r); got != tt.want { // <-- Adicionados os & aqui
-				t.Errorf("AreEquals([%v],[%v]) = %v, want %v", tt.args.l, tt.args.r, got, tt.want)
+			if got := AreEquals(&tt.args.l, &tt.args.r); got != tt.want {
+				t.Errorf("AreEquals([%v],[%v]) = %v, want %v", &tt.args.l, &tt.args.r, got, tt.want)
 			}
 		})
 	}
@@ -174,10 +179,11 @@ func TestNegate(t *testing.T) {
 		{"positive", mm(1, 200), mm(-1, -200)},
 		{"carries currency code", mmc(0, 0, "XXX"), mmc(0, 0, "XXX")},
 	}
-	for _, tt := range tests {
+	for i := range tests {
+		tt := &tests[i]
 		t.Run(tt.name, func(t *testing.T) {
 			if got := Negate(&tt.in); !AreEquals(got, &tt.want) { // <-- Adicionados os & em tt.in e tt.want
-				t.Errorf("Negate([%v]) = %v, want %v", tt.in, got, tt.want)
+				t.Errorf("Negate([%v]) = %v, want %v", &tt.in, got, &tt.want)
 			}
 		})
 	}
@@ -234,14 +240,15 @@ func TestSum(t *testing.T) {
 		{"0+negative", args{mm(0, 0), mm(-2, -100000000)}, mm(-2, -100000000), nil},
 		{"negative+0", args{mm(-2, -100000000), mm(0, 0)}, mm(-2, -100000000), nil},
 	}
-	for _, tt := range tests {
+	for i := range tests {
+		tt := &tests[i]
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := Sum(&tt.args.l, &tt.args.r) // <-- Adicionados os & em tt.args.l e tt.args.r
 			if err != tt.wantErr {
 				t.Errorf("Sum([%v],[%v]): expected err=\"%v\" got=\"%v\"", &tt.args.l, &tt.args.r, tt.wantErr, err)
 			}
 			if !reflect.DeepEqual(got, &tt.want) { // <-- Adicionado o & em tt.want para alinhar os tipos (*pb.Money)
-				t.Errorf("Sum([%v],[%v]) = %v, want %v", &tt.args.l, &tt.args.r, got, tt.want)
+				t.Errorf("Sum([%v],[%v]) = %v, want %v", &tt.args.l, &tt.args.r, got, &tt.want)
 			}
 		})
 	}
