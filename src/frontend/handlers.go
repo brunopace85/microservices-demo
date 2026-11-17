@@ -44,8 +44,8 @@ type platformDetails struct {
 
 var (
 	frontendMessage  = strings.TrimSpace(os.Getenv("FRONTEND_MESSAGE"))
-	isCymbalBrand    = strings.ToLower(os.Getenv("CYMBAL_BRANDING")) == "true"
-	assistantEnabled = strings.ToLower(os.Getenv("ENABLE_ASSISTANT")) == "true"
+	isCymbalBrand    = "true" == strings.ToLower(os.Getenv("CYMBAL_BRANDING"))
+	assistantEnabled = "true" == strings.ToLower(os.Getenv("ENABLE_ASSISTANT"))
 	templates        = template.Must(template.New("").
 				Funcs(template.FuncMap{
 			"renderMoney":        renderMoney,
@@ -92,7 +92,7 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 	// Set ENV_PLATFORM (default to local if not set; use env var if set; otherwise detect GCP, which overrides env)_
 	var env = os.Getenv("ENV_PLATFORM")
 	// Only override from env variable if set + valid env
-	if env == "" || !stringinSlice(validEnvs, env) {
+	if env == "" || stringinSlice(validEnvs, env) == false {
 		fmt.Println("env platform is either empty or invalid")
 		env = "local"
 	}
@@ -120,23 +120,22 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (plat *platformDetails) setPlatformDetails(env string) {
-	switch env {
-	case "aws":
+	if env == "aws" {
 		plat.provider = "AWS"
 		plat.css = "aws-platform"
-	case "onprem":
+	} else if env == "onprem" {
 		plat.provider = "On-Premises"
 		plat.css = "onprem-platform"
-	case "azure":
+	} else if env == "azure" {
 		plat.provider = "Azure"
 		plat.css = "azure-platform"
-	case "gcp":
+	} else if env == "gcp" {
 		plat.provider = "Google Cloud"
 		plat.css = "gcp-platform"
-	case "alibaba":
+	} else if env == "alibaba" {
 		plat.provider = "Alibaba Cloud"
 		plat.css = "alibaba-platform"
-	default:
+	} else {
 		plat.provider = "local"
 		plat.css = "local"
 	}
@@ -281,19 +280,27 @@ func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request
 		Price    *pb.Money
 	}
 	items := make([]cartItemView, len(cart))
-	totalPrice := &pb.Money{CurrencyCode: currentCurrency(r)}
+	totalPrice := pb.Money{CurrencyCode: currentCurrency(r)}
 	for i, item := range cart {
-	    // ... (igual)
-	    multPrice := money.MultiplySlow(price, uint32(item.GetQuantity()))
-	    items[i] = cartItemView{
-	        Item:     p,
-	        Quantity: item.GetQuantity(),
-	        Price:    multPrice}
-	    totalPrice = money.Must(money.Sum(totalPrice, multPrice))
+		p, err := fe.getProduct(r.Context(), item.GetProductId())
+		if err != nil {
+			renderHTTPError(log, r, w, errors.Wrapf(err, "could not retrieve product #%s", item.GetProductId()), http.StatusInternalServerError)
+			return
+		}
+		price, err := fe.convertCurrency(r.Context(), p.GetPriceUsd(), currentCurrency(r))
+		if err != nil {
+			renderHTTPError(log, r, w, errors.Wrapf(err, "could not convert currency for product #%s", item.GetProductId()), http.StatusInternalServerError)
+			return
+		}
+
+		multPrice := money.MultiplySlow(*price, uint32(item.GetQuantity()))
+		items[i] = cartItemView{
+			Item:     p,
+			Quantity: item.GetQuantity(),
+			Price:    &multPrice}
+		totalPrice = money.Must(money.Sum(totalPrice, multPrice))
 	}
-	totalPrice = money.Must(money.Sum(totalPrice, shippingCost))
-	}
-	totalPrice = money.Must(money.Sum(totalPrice, shippingCost))
+	totalPrice = money.Must(money.Sum(totalPrice, *shippingCost))
 	year := time.Now().Year()
 
 	if err := templates.ExecuteTemplate(w, "cart", injectCommonTemplateData(r, map[string]interface{}{
@@ -373,7 +380,7 @@ func (fe *frontendServer) placeOrderHandler(w http.ResponseWriter, r *http.Reque
 	totalPaid := *order.GetOrder().GetShippingCost()
 	for _, v := range order.GetOrder().GetItems() {
 		multPrice := money.MultiplySlow(*v.GetCost(), uint32(v.GetItem().GetQuantity()))
-		totalPaid = money.Must(money.Sum(*totalPaid, multPrice))
+		totalPaid = money.Must(money.Sum(totalPaid, multPrice))
 	}
 
 	currencies, err := fe.getCurrencies(r.Context())
@@ -437,7 +444,7 @@ func (fe *frontendServer) getProductByID(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	_, _ = w.Write(jsonData)
+	w.Write(jsonData)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -484,7 +491,7 @@ func (fe *frontendServer) chatBotHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	// respond with the same message
-	_, _ = json.NewEncoder(w).Encode(Response{Message: response.Content})
+	json.NewEncoder(w).Encode(Response{Message: response.Content})
 
 	w.WriteHeader(http.StatusOK)
 }

@@ -71,8 +71,8 @@ func AreEquals(l, r pb.Money) bool {
 }
 
 // Negate returns the same amount with the sign negated.
-func Negate(m *pb.Money) pb.Money {
-	return &pb.Money{
+func Negate(m pb.Money) pb.Money {
+	return pb.Money{
 		Units:        -m.GetUnits(),
 		Nanos:        -m.GetNanos(),
 		CurrencyCode: m.GetCurrencyCode()}
@@ -80,7 +80,7 @@ func Negate(m *pb.Money) pb.Money {
 
 // Must panics if the given error is not nil. This can be used with other
 // functions like: "m := Must(Sum(a,b))".
-func Must(v *pb.Money, err error) pb.Money {
+func Must(v pb.Money, err error) pb.Money {
 	if err != nil {
 		panic(err)
 	}
@@ -90,11 +90,11 @@ func Must(v *pb.Money, err error) pb.Money {
 // Sum adds two values. Returns an error if one of the values are invalid or
 // currency codes are not matching (unless currency code is unspecified for
 // both).
-func Sum(l, r *pb.Money) (*pb.Money, error) {
+func Sum(l, r pb.Money) (pb.Money, error) {
 	if !IsValid(l) || !IsValid(r) {
-		return nil, ErrInvalidValue
+		return pb.Money{}, ErrInvalidValue
 	} else if l.GetCurrencyCode() != r.GetCurrencyCode() {
-		return nil, ErrMismatchingCurrency
+		return pb.Money{}, ErrMismatchingCurrency
 	}
 	units := l.GetUnits() + r.GetUnits()
 	nanos := l.GetNanos() + r.GetNanos()
@@ -114,7 +114,7 @@ func Sum(l, r *pb.Money) (*pb.Money, error) {
 		}
 	}
 
-	return &pb.Money{
+	return pb.Money{
 		Units:        units,
 		Nanos:        nanos,
 		CurrencyCode: l.GetCurrencyCode()}, nil
@@ -122,7 +122,7 @@ func Sum(l, r *pb.Money) (*pb.Money, error) {
 
 // MultiplySlow is a slow multiplication operation done through adding the value
 // to itself n-1 times.
-func MultiplySlow(m *pb.Money, n uint32) *pb.Money {
+func MultiplySlow(m pb.Money, n uint32) pb.Money {
 	out := m
 	for n > 1 {
 		out = Must(Sum(out, m))

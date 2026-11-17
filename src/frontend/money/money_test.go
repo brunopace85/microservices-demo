@@ -22,10 +22,8 @@ import (
 	pb "github.com/GoogleCloudPlatform/microservices-demo/src/frontend/genproto"
 )
 
-func mmc(u int64, n int32, c string) *pb.Money {
-	return &pb.Money{Units: u, Nanos: n, CurrencyCode: c}
-}
-func mm(u int64, n int32) *pb.Money { return mmc(u, n, "") }
+func mmc(u int64, n int32, c string) pb.Money { return pb.Money{Units: u, Nanos: n, CurrencyCode: c} }
+func mm(u int64, n int32) pb.Money            { return mmc(u, n, "") }
 
 func TestIsValid(t *testing.T) {
 	tests := []struct {
@@ -44,7 +42,7 @@ func TestIsValid(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsValid(&tt.in); got != tt.want {
+			if got := IsValid(tt.in); got != tt.want {
 				t.Errorf("IsValid(%v) = %v, want %v", tt.in, got, tt.want)
 			}
 		})
@@ -65,7 +63,7 @@ func TestIsZero(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsZero(&tt.in); got != tt.want {
+			if got := IsZero(tt.in); got != tt.want {
 				t.Errorf("IsZero(%v) = %v, want %v", tt.in, got, tt.want)
 			}
 		})
@@ -86,7 +84,7 @@ func TestIsPositive(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsPositive(&tt.in); got != tt.want {
+			if got := IsPositive(tt.in); got != tt.want {
 				t.Errorf("IsPositive(%v) = %v, want %v", tt.in, got, tt.want)
 			}
 		})
@@ -107,7 +105,7 @@ func TestIsNegative(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsNegative(&tt.in); got != tt.want {
+			if got := IsNegative(tt.in); got != tt.want {
 				t.Errorf("IsNegative(%v) = %v, want %v", tt.in, got, tt.want)
 			}
 		})
