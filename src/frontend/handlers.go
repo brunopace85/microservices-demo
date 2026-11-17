@@ -120,22 +120,23 @@ func (fe *frontendServer) homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (plat *platformDetails) setPlatformDetails(env string) {
-	if env == "aws" {
+	switch env {
+	case "aws":
 		plat.provider = "AWS"
 		plat.css = "aws-platform"
-	} else if env == "onprem" {
+	case "onprem":
 		plat.provider = "On-Premises"
 		plat.css = "onprem-platform"
-	} else if env == "azure" {
+	case "azure":
 		plat.provider = "Azure"
 		plat.css = "azure-platform"
-	} else if env == "gcp" {
+	case "gcp":
 		plat.provider = "Google Cloud"
 		plat.css = "gcp-platform"
-	} else if env == "alibaba" {
+	case "alibaba":
 		plat.provider = "Alibaba Cloud"
 		plat.css = "alibaba-platform"
-	} else {
+	default:
 		plat.provider = "local"
 		plat.css = "local"
 	}
