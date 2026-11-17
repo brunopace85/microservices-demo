@@ -299,9 +299,9 @@ func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request
 			Item:     p,
 			Quantity: item.GetQuantity(),
 			Price:    multPrice}
-		totalPrice = money.Must(money.Sum(*totalPrice, multPrice))
+		totalPrice = money.Must(money.Sum(totalPrice, multPrice))
 	}
-	totalPrice = money.Must(money.Sum(*totalPrice, shippingCost))
+	totalPrice = money.Must(money.Sum(totalPrice, shippingCost))
 	year := time.Now().Year()
 
 	if err := templates.ExecuteTemplate(w, "cart", injectCommonTemplateData(r, map[string]interface{}{
