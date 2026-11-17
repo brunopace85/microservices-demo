@@ -175,7 +175,7 @@ func TestNegate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Negate(tt.in); !AreEquals(got, tt.want) {
+			if got := Negate(&tt.in); !AreEquals(got, &tt.want) { // <-- Adicionados os & em tt.in e tt.want
 				t.Errorf("Negate([%v]) = %v, want %v", tt.in, got, tt.want)
 			}
 		})
