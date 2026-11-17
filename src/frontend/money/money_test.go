@@ -42,7 +42,7 @@ func TestIsValid(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsValid(tt.in); got != tt.want {
+			if got := IsValid(&tt.in); got != tt.want { // <-- Adicione o & aqui
 				t.Errorf("IsValid(%v) = %v, want %v", tt.in, got, tt.want)
 			}
 		})
