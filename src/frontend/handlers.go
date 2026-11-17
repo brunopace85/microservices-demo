@@ -302,17 +302,13 @@ func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request
 			Item:     p,
 			Quantity: item.GetQuantity(),
 			Price:    multPrice}
-		totalPrice = money.Must(money.Sum(
+		totalPrice = *money.Must(money.Sum(
 			&pb.Money{
 				CurrencyCode: totalPrice.GetCurrencyCode(),
 				Units:        totalPrice.GetUnits(),
 				Nanos:        totalPrice.GetNanos(),
 			},
-			&pb.Money{
-				CurrencyCode: multPrice.GetCurrencyCode(),
-				Units:        multPrice.GetUnits(),
-				Nanos:        multPrice.GetNanos(),
-			},
+			multPrice,
 		))
 	}
 	totalPrice = money.Must(money.Sum(
