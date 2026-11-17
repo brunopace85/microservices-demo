@@ -44,8 +44,8 @@ type platformDetails struct {
 
 var (
 	frontendMessage  = strings.TrimSpace(os.Getenv("FRONTEND_MESSAGE"))
-	isCymbalBrand    = "true" == strings.ToLower(os.Getenv("CYMBAL_BRANDING"))
-	assistantEnabled = "true" == strings.ToLower(os.Getenv("ENABLE_ASSISTANT"))
+	isCymbalBrand    = strings.ToLower(os.Getenv("CYMBAL_BRANDING")) == "true"  // <-- Invertido
+	assistantEnabled = strings.ToLower(os.Getenv("ENABLE_ASSISTANT")) == "true" // <-- Invertido
 	templates        = template.Must(template.New("").
 				Funcs(template.FuncMap{
 			"renderMoney":        renderMoney,
