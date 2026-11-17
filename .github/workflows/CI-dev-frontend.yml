@@ -1,4 +1,4 @@
-name: Update Image Tag in GitOps Repository
+name: Frontend (DEV) - Lint, Build & Update GitOps
 
 on:
   push:
