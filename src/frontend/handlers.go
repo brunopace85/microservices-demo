@@ -293,7 +293,7 @@ func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request
 			return
 		}
 
-		multPrice := money.MultiplySlow(pb.Money{
+		multPrice := money.MultiplySlow(&pb.Money{
 			CurrencyCode: price.GetCurrencyCode(),
 			Units:        price.GetUnits(),
 			Nanos:        price.GetNanos(),
