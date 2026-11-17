@@ -22,8 +22,10 @@ import (
 	pb "github.com/GoogleCloudPlatform/microservices-demo/src/frontend/genproto"
 )
 
-func mmc(u int64, n int32, c string) pb.Money { return pb.Money{Units: u, Nanos: n, CurrencyCode: c} }
-func mm(u int64, n int32) pb.Money            { return mmc(u, n, "") }
+func mmc(u int64, n int32, c string) *pb.Money {
+	return &pb.Money{Units: u, Nanos: n, CurrencyCode: c}
+}
+func mm(u int64, n int32) *pb.Money { return mmc(u, n, "") }
 
 func TestIsValid(t *testing.T) {
 	tests := []struct {

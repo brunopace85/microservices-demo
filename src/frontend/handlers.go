@@ -281,25 +281,17 @@ func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request
 		Price    *pb.Money
 	}
 	items := make([]cartItemView, len(cart))
-	totalPrice := pb.Money{CurrencyCode: currentCurrency(r)}
+	totalPrice := &pb.Money{CurrencyCode: currentCurrency(r)}
 	for i, item := range cart {
-		p, err := fe.getProduct(r.Context(), item.GetProductId())
-		if err != nil {
-			renderHTTPError(log, r, w, errors.Wrapf(err, "could not retrieve product #%s", item.GetProductId()), http.StatusInternalServerError)
-			return
-		}
-		price, err := fe.convertCurrency(r.Context(), p.GetPriceUsd(), currentCurrency(r))
-		if err != nil {
-			renderHTTPError(log, r, w, errors.Wrapf(err, "could not convert currency for product #%s", item.GetProductId()), http.StatusInternalServerError)
-			return
-		}
-
-		multPrice := money.MultiplySlow(price, uint32(item.GetQuantity()))
-		items[i] = cartItemView{
-			Item:     p,
-			Quantity: item.GetQuantity(),
-			Price:    multPrice}
-		totalPrice = money.Must(money.Sum(totalPrice, multPrice))
+	    // ... (igual)
+	    multPrice := money.MultiplySlow(price, uint32(item.GetQuantity()))
+	    items[i] = cartItemView{
+	        Item:     p,
+	        Quantity: item.GetQuantity(),
+	        Price:    multPrice}
+	    totalPrice = money.Must(money.Sum(totalPrice, multPrice))
+	}
+	totalPrice = money.Must(money.Sum(totalPrice, shippingCost))
 	}
 	totalPrice = money.Must(money.Sum(totalPrice, shippingCost))
 	year := time.Now().Year()
