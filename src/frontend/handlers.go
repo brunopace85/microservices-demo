@@ -303,12 +303,12 @@ func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request
 			Quantity: item.GetQuantity(),
 			Price:    multPrice}
 		totalPrice = money.Must(money.Sum(
-			pb.Money{
+			&pb.Money{
 				CurrencyCode: totalPrice.GetCurrencyCode(),
 				Units:        totalPrice.GetUnits(),
 				Nanos:        totalPrice.GetNanos(),
 			},
-			pb.Money{
+			&pb.Money{
 				CurrencyCode: multPrice.GetCurrencyCode(),
 				Units:        multPrice.GetUnits(),
 				Nanos:        multPrice.GetNanos(),
@@ -316,12 +316,12 @@ func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request
 		))
 	}
 	totalPrice = money.Must(money.Sum(
-		pb.Money{
+		&pb.Money{
 			CurrencyCode: totalPrice.GetCurrencyCode(),
 			Units:        totalPrice.GetUnits(),
 			Nanos:        totalPrice.GetNanos(),
 		},
-		pb.Money{
+		&pb.Money{
 			CurrencyCode: shippingCost.GetCurrencyCode(),
 			Units:        shippingCost.GetUnits(),
 			Nanos:        shippingCost.GetNanos(),
@@ -335,7 +335,7 @@ func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request
 		"cart_size":       cartSize(cart),
 		"shipping_cost":   shippingCost,
 		"show_currency":   true,
-		"total_cost": pb.Money{
+		"total_cost": &pb.Money{
 			CurrencyCode: totalPrice.GetCurrencyCode(),
 			Units:        totalPrice.GetUnits(),
 			Nanos:        totalPrice.GetNanos(),
