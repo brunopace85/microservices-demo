@@ -315,7 +315,18 @@ func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request
 			},
 		))
 	}
-	totalPrice = money.Must(money.Sum(totalPrice, *shippingCost))
+	totalPrice = money.Must(money.Sum(
+		pb.Money{
+			CurrencyCode: totalPrice.GetCurrencyCode(),
+			Units:        totalPrice.GetUnits(),
+			Nanos:        totalPrice.GetNanos(),
+		},
+		pb.Money{
+			CurrencyCode: shippingCost.GetCurrencyCode(),
+			Units:        shippingCost.GetUnits(),
+			Nanos:        shippingCost.GetNanos(),
+		},
+	))
 	year := time.Now().Year()
 
 	if err := templates.ExecuteTemplate(w, "cart", injectCommonTemplateData(r, map[string]interface{}{
