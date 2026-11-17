@@ -40,10 +40,11 @@ func TestIsValid(t *testing.T) {
 		{"invalid -/+overflow", mm(-3, 1000000000), false},
 		{"invalid -/-overflow", mm(-3, -1000000000), false},
 	}
-	for _, tt := range tests {
+	for i := range tests {
+		tt := &tests[i]
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsValid(&tt.in); got != tt.want { // <-- Adicione o & aqui
-				t.Errorf("IsValid(%v) = %v, want %v", tt.in, got, tt.want)
+			if got := IsValid(&tt.in); got != tt.want {
+				t.Errorf("IsValid(%v) = %v, want %v", &tt.in, got, tt.want) // Passa o ponteiro para evitar copiar o lock
 			}
 		})
 	}
