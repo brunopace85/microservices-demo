@@ -405,7 +405,7 @@ func (fe *frontendServer) placeOrderHandler(w http.ResponseWriter, r *http.Reque
 
 	totalPaid := *order.GetOrder().GetShippingCost()
 	for _, v := range order.GetOrder().GetItems() {
-		multPrice := money.MultiplySlow(*v.GetCost(), uint32(v.GetItem().GetQuantity()))
+		multPrice := money.MultiplySlow(v.GetCost(), uint32(v.GetItem().GetQuantity()))
 		totalPaid = money.Must(money.Sum(
 			pb.Money{
 				CurrencyCode: totalPaid.GetCurrencyCode(),
