@@ -141,6 +141,7 @@ func Sum(l, r *pb.Money) (*pb.Money, error) {
 	}
 
 	return &pb.Money{
+		
 		Units:        units,
 		Nanos:        nanos,
 		CurrencyCode: l.GetCurrencyCode()}, nil
