@@ -301,7 +301,7 @@ func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request
 		items[i] = cartItemView{
 			Item:     p,
 			Quantity: item.GetQuantity(),
-			Price:    &multPrice}
+			Price:    multPrice}
 		totalPrice = money.Must(money.Sum(
 			pb.Money{
 				CurrencyCode: totalPrice.GetCurrencyCode(),
