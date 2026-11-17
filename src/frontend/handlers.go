@@ -330,12 +330,16 @@ func (fe *frontendServer) viewCartHandler(w http.ResponseWriter, r *http.Request
 	year := time.Now().Year()
 
 	if err := templates.ExecuteTemplate(w, "cart", injectCommonTemplateData(r, map[string]interface{}{
-		"currencies":       currencies,
-		"recommendations":  recommendations,
-		"cart_size":        cartSize(cart),
-		"shipping_cost":    shippingCost,
-		"show_currency":    true,
-		"total_cost":       totalPrice,
+		"currencies":      currencies,
+		"recommendations": recommendations,
+		"cart_size":       cartSize(cart),
+		"shipping_cost":   shippingCost,
+		"show_currency":   true,
+		"total_cost": pb.Money{
+			CurrencyCode: totalPrice.GetCurrencyCode(),
+			Units:        totalPrice.GetUnits(),
+			Nanos:        totalPrice.GetNanos(),
+		},
 		"items":            items,
 		"expiration_years": []int{year, year + 1, year + 2, year + 3, year + 4},
 	})); err != nil {
