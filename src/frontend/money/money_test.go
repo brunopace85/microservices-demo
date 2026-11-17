@@ -196,7 +196,8 @@ func TestMust_panic(t *testing.T) {
 			t.Logf("panic captured: %v", r)
 		}
 	}()
-	Must(mm(2, 3), fmt.Errorf("some error"))
+	m := mm(2, 3)
+	Must(&m, fmt.Errorf("some error")) // <-- Passa o ponteiro &m
 	t.Fatal("this should not have executed due to the panic above")
 }
 
