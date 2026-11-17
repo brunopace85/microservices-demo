@@ -183,8 +183,9 @@ func TestNegate(t *testing.T) {
 }
 
 func TestMust_pass(t *testing.T) {
-	v := Must(mm(2, 3), nil)
-	if !AreEquals(v, mm(2, 3)) {
+	m := mm(2, 3)
+	v := Must(&m, nil)
+	if !AreEquals(v, &m) {
 		t.Errorf("returned the wrong value: %v", v)
 	}
 }
